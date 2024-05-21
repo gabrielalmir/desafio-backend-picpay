@@ -1,73 +1,122 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Desafio Backend PicPay (em desenvolvimento)
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Visão Geral
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Este projeto é uma solução para o desafio técnico de backend do PicPay. A aplicação simula uma plataforma de pagamentos onde usuários podem realizar transferências entre si. O projeto é desenvolvido utilizando Node.js com o framework NestJS, Prisma como ORM, e Kafka para mensageria.
 
-## Description
+## Tecnologias Utilizadas
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- **Node.js**: Ambiente de execução JavaScript no lado do servidor.
+- **NestJS**: Framework para construção de aplicações Node.js escaláveis e de fácil manutenção.
+- **Prisma**: ORM para TypeScript e Node.js que facilita o acesso ao banco de dados.
+- **Kafka**: Plataforma de streaming distribuído usada para mensageria.
+- **Zod**: Biblioteca para validação de esquemas.
 
-## Installation
+## Configuração do Ambiente
 
-```bash
-$ pnpm install
-```
+### Pré-requisitos
 
-## Running the app
+- Node.js
+- Docker (para executar o Kafka e o banco de dados)
+- PostgreSQL (caso não utilize Docker para o banco de dados)
 
-```bash
-# development
-$ pnpm run start
+### Instalação
 
-# watch mode
-$ pnpm run start:dev
+1. Clone o repositório:
 
-# production mode
-$ pnpm run start:prod
-```
+    ```bash
+    git clone https://github.com/gabrielalmir/desafio-backend-picpay.git
+    cd desafio-backend-picpay
+    ```
 
-## Test
+2. Instale as dependências:
 
-```bash
-# unit tests
-$ pnpm run test
+    ```bash
+    npm install
+    ```
 
-# e2e tests
-$ pnpm run test:e2e
+3. Configure as variáveis de ambiente:
 
-# test coverage
-$ pnpm run test:cov
-```
+    Crie um arquivo `.env` na raiz do projeto e defina as seguintes variáveis:
 
-## Support
+    ```env
+    PORT=3000
+    NODE_ENV=development
+    DATABASE_URL=postgresql://username:password@localhost:5432/mydatabase
+    AUTHORIZATION_SERVICE_URL=https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc
+    NOTIFICATION_SERVICE_URL=https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6
+    ```
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Executando a Aplicação
 
-## Stay in touch
+1. Execute as migrações do Prisma para configurar o banco de dados:
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+    ```bash
+    npx prisma migrate dev --name init
+    ```
 
-## License
+2. Suba os serviços Docker (Kafka e PostgreSQL):
 
-Nest is [MIT licensed](LICENSE).
+    ```bash
+    docker-compose up
+    ```
+
+3. Inicie a aplicação:
+
+    ```bash
+    npm run start
+    ```
+
+    A aplicação estará disponível em `http://localhost:3000`.
+
+## Endpoints da API
+
+### Usuários
+
+- **POST /users**
+  - Cria um novo usuário.
+  - Payload:
+    ```json
+    {
+      "fullName": "John Doe",
+      "cpf": "12345678900",
+      "email": "john.doe@example.com",
+      "password": "strongpassword",
+      "userType": "common"
+    }
+    ```
+
+### Transações
+
+- **POST /transactions**
+  - Cria uma nova transação.
+  - Payload:
+    ```json
+    {
+      "value": 100.0,
+      "payerId": 1,
+      "payeeId": 2
+    }
+    ```
+
+## Arquitetura
+
+A aplicação segue os princípios de arquitetura limpa, separando as responsabilidades em diferentes módulos. Utilizamos Prisma como ORM para facilitar o acesso ao banco de dados e Kafka para mensageria entre serviços.
+
+## Contribuição
+
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/amazing-feature`)
+3. Commit suas mudanças (`git commit -m 'Add some amazing feature'`)
+4. Faça o push para a branch (`git push origin feature/amazing-feature`)
+5. Abra um Pull Request
+
+## Licença
+
+Distribuído sob a licença MIT. Veja `LICENSE` para mais informações.
+
+## Contato
+
+Gabriel Almir - [LinkedIn](https://www.linkedin.com/in/gabrielalmir/) - @gabrielalmir
+
+Projeto Link: [https://github.com/gabrielalmir/desafio-backend-picpay](https://github.com/gabrielalmir/desafio-backend-picpay)

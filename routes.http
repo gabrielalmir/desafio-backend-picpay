@@ -1,0 +1,21 @@
+# Endpoint de wallets
+POST /wallets
+Content-Type: application/json
+
+{
+  "fullName": "John Doe",
+  "cpf": "12345678900",
+  "email": "john.doe@example.com",
+  "password": "strongpassword",
+  "userType": "common"
+}
+
+# Endpoint de transferência
+POST /transfer
+Content-Type: application/json
+
+{
+  "value": 100.0,
+  "payer": 4,
+  "payee": 15
+}

@@ -73,7 +73,7 @@ Este projeto é uma solução para o desafio técnico de backend do PicPay. A ap
 
 ### Usuários
 
-- **POST /users**
+- **POST /wallets**
   - Cria um novo usuário.
   - Payload:
     ```json

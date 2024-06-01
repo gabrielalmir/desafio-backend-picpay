@@ -18,7 +18,7 @@ model Wallet {
   password             String        @map("PASSWORD")
   type                 Int           @map("TYPE")
   balance              Decimal       @default(0.00) @map("BALANCE")
-  version              BigInt        @map("VERSION")
+  version              BigInt        @default(0) @map("VERSION")
   transactionsSent     Transaction[] @relation("payer")
   transactionsReceived Transaction[] @relation("payee")
 

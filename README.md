@@ -82,7 +82,7 @@ Este projeto é uma solução para o desafio técnico de backend do PicPay. A ap
       "cpf": "12345678900",
       "email": "john.doe@example.com",
       "password": "strongpassword",
-      "userType": "common"
+      "type": "common"
     }
     ```
 

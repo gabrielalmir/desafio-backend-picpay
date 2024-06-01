@@ -1,4 +1,5 @@
 import { ConflictException, Injectable } from "@nestjs/common";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
 import { PrismaService } from "src/prisma/prisma.service";
 import { CreateWalletDto } from "./dtos/create-wallet.dto";
 import { WalletType } from "./enums/wallet-type.enum";
@@ -10,27 +11,26 @@ export class WalletService {
     }
 
     async createWallet(wallet: CreateWalletDto) {
-        const exists = await this.prismaService.wallet.findUnique({
-            where: {
-                cpf: BigInt(wallet.cpf),
-                OR: [{ email: wallet.email }]
-            }
-        });
-
-        if (exists) {
-            throw new ConflictException("User already exists");
-        }
-
         const walletTypes = Object.values(WalletType);
 
-        await this.prismaService.wallet.create({
-            data: {
-                fullName: wallet.fullName,
-                cpf: BigInt(wallet.cpf),
-                email: wallet.email,
-                password: wallet.password,
-                type: walletTypes.indexOf(wallet.type),
+        try {
+            const walletCreated = await this.prismaService.wallet.create({
+                data: {
+                    fullName: wallet.fullName,
+                    cpf: BigInt(wallet.cpf),
+                    email: wallet.email,
+                    password: wallet.password,
+                    type: walletTypes.indexOf(wallet.type),
+                }
+            })
+
+            return walletCreated;
+        } catch (error) {
+            if (error instanceof PrismaClientKnownRequestError && error.code === 'P2002') {
+                throw new ConflictException('User already exists');
             }
-        })
+
+            throw error;
+        }
     }
 }

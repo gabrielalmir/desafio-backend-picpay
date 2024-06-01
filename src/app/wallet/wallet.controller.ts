@@ -6,10 +6,10 @@ import { WalletService } from "./wallet.service";
 @Controller("wallets")
 export class WalletController {
     constructor(
-        readonly walletService: WalletService,
-        readonly prismaService: PrismaService
+        private readonly walletService: WalletService,
+        private readonly prismaService: PrismaService
     ) {
-        this.walletService = new WalletService(prismaService);
+        this.walletService = new WalletService(this.prismaService);
     }
 
     @Post()

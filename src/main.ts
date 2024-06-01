@@ -2,6 +2,7 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
+import { PrismaClientExceptionFilter } from './app/filters/prisma-exception.filter';
 
 async function bootstrap() {
   // Create the NestJS application
@@ -13,6 +14,7 @@ async function bootstrap() {
   // Setup Application
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalFilters(new PrismaClientExceptionFilter());
 
   // Start the application
   await app.listen(3000);

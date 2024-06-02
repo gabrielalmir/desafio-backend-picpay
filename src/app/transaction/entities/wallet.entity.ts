@@ -26,4 +26,11 @@ export class WalletEntity implements Wallet {
     this.balance = this.balance.sub(value);
     wallet.balance = wallet.balance.add(value);
   }
+
+  toUpdate() {
+    return {
+      balance: this.balance,
+      version: this.version + BigInt(1),
+    };
+  }
 }

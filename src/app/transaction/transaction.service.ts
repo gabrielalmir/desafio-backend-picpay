@@ -37,16 +37,7 @@ export class TransactionService {
             in: [payer.id, payee.id],
           },
         },
-        data: [
-          {
-            id: payer.id,
-            balance: payerWallet.balance,
-          },
-          {
-            id: payee.id,
-            balance: payeeWallet.balance,
-          },
-        ],
+        data: [payerWallet.toUpdate(), payeeWallet.toUpdate()],
       });
 
       const newTransaction = await prisma.transaction.create({

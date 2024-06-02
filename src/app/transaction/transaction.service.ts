@@ -31,14 +31,12 @@ export class TransactionService {
 
       payerWallet.transfer(createTransactionDto.value, payeeWallet);
 
-      await this.prismaService.wallet.updateMany({
-        where: {
-          id: {
-            in: [payer.id, payee.id],
-          },
-        },
-        data: [payerWallet.toUpdate(), payeeWallet.toUpdate()],
-      });
+      for (const wallet of [payerWallet, payeeWallet]) {
+        await prisma.wallet.update({
+          where: { id: wallet.id },
+          data: wallet.toUpdate(),
+        });
+      }
 
       const newTransaction = await prisma.transaction.create({
         data: {

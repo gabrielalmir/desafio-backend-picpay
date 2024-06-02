@@ -1,16 +1,16 @@
-import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { ArgumentsHost, Catch, ExceptionFilter, Logger } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { FastifyReply } from 'fastify';
 
-@Catch(
-  Prisma.PrismaClientKnownRequestError,
-  Prisma.NotFoundError,
-  Prisma.PrismaClientUnknownRequestError,
-)
+@Catch(Prisma.PrismaClientKnownRequestError, Prisma.NotFoundError, Prisma.PrismaClientUnknownRequestError)
 export class PrismaClientExceptionFilter implements ExceptionFilter {
+  private readonly logger = new Logger(PrismaClientExceptionFilter.name);
+
   catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<FastifyReply>();
+
+    this.logger.error(exception);
 
     switch (exception.code) {
       case 'P2002':

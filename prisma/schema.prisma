@@ -12,17 +12,17 @@ datasource db {
 
 model Wallet {
   id                   Int           @id @default(autoincrement()) @map("ID")
-  fullName             String        @map("FULL_NAME")
+  fullName             String        @map("FULL_NAME") @db.VarChar(100)
   cpf                  BigInt        @unique @map("CPF")
-  email                String        @unique @map("EMAIL")
-  password             String        @map("PASSWORD")
+  email                String        @unique @map("EMAIL") @db.VarChar(100)
+  password             String        @map("PASSWORD") @db.VarChar(100)
   type                 Int           @map("TYPE")
-  balance              Decimal       @default(0.00) @map("BALANCE")
+  balance              Decimal       @default(0.00) @map("BALANCE") @db.Decimal(10, 2)
   version              BigInt        @default(0) @map("VERSION")
   transactionsSent     Transaction[] @relation("payer")
   transactionsReceived Transaction[] @relation("payee")
 
-  @@map("WALLETS")
+  @@map("wallets")
 }
 
 model Transaction {
@@ -35,5 +35,5 @@ model Transaction {
   payer Wallet @relation("payer", fields: [payerId], references: [id])
   payee Wallet @relation("payee", fields: [payeeId], references: [id])
 
-  @@map("TRANSACTIONS")
+  @@map("transactions")
 }

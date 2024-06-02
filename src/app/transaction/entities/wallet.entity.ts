@@ -29,6 +29,7 @@ export class WalletEntity implements Wallet {
 
   toUpdate() {
     return {
+      id: this.id,
       balance: this.balance,
       version: this.version + BigInt(1),
     };

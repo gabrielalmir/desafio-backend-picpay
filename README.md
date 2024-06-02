@@ -17,7 +17,7 @@ Este projeto é uma solução para o desafio técnico de backend do PicPay. A ap
 ### Pré-requisitos
 
 - Node.js
-- Docker (para executar o Kafka e o banco de dados)
+- Docker (para executar o Redis e o banco de dados)
 - PostgreSQL (caso não utilize Docker para o banco de dados)
 
 ### Instalação
@@ -43,13 +43,13 @@ Este projeto é uma solução para o desafio técnico de backend do PicPay. A ap
     PORT=3000
     NODE_ENV=development
     DATABASE_URL=postgresql://username:password@localhost:5432/mydatabase
-    AUTHORIZATION_SERVICE_URL=https://run.mocky.io/v3/5794d450-d2e2-4412-8131-73d0293ac1cc
-    NOTIFICATION_SERVICE_URL=https://run.mocky.io/v3/54dc2cf1-3add-45b5-b5a9-6bf7e7f1f4a6
+    AUTHORIZATION_SERVICE_URL=https://util.devi.tools/api/v2/authorize
+    NOTIFICATION_SERVICE_URL=https://util.devi.tools/api/v1/notify
     ```
 
 ### Executando a Aplicação
 
-1. Suba os serviços Docker (Kafka e PostgreSQL):
+1. Suba os serviços Docker (Redis e PostgreSQL):
 
     ```bash
     docker-compose up -d

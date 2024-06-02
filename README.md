@@ -1,4 +1,4 @@
-# Desafio Backend PicPay (em desenvolvimento)
+# Desafio Backend PicPay
 
 ## Visão Geral
 

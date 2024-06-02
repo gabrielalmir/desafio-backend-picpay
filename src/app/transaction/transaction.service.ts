@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Wallet } from '@prisma/client';
 import { PrismaService } from 'src/infra/prisma/prisma.service';
 import { CreateTransactionDto } from './dtos/create-transaction.dto';
+import { WalletEntity } from './entities/wallet.entity';
 import { InvalidTransactionError } from './errors/invalid-transaction.error';
 import { AuthorizeService } from './services/authorize.service';
 import { NotificationService } from './services/notification.service';
@@ -28,15 +29,21 @@ export class TransactionService {
     }
 
     const result = await this.prismaService.$transaction(async (prisma) => {
-      const payerWalletUpdate = prisma.wallet.update({
-        where: { id: createTransactionDto.payerId },
-        data: { balance: payer.balance.sub(createTransactionDto.value) },
-      });
+      const payerWallet = new WalletEntity(payer);
+      const payeeWallet = new WalletEntity(payee);
 
-      const payeeWalletUpdate = prisma.wallet.update({
-        where: { id: createTransactionDto.payeeId },
-        data: { balance: payee.balance.add(createTransactionDto.value) },
-      });
+      payerWallet.transfer(createTransactionDto.value, payeeWallet);
+
+      const [payerWalletUpdate, payeeWalletUpdate] = await Promise.all([
+        prisma.wallet.update({
+          where: { id: payer.id },
+          data: { balance: payerWallet.balance },
+        }),
+        prisma.wallet.update({
+          where: { id: payee.id },
+          data: { balance: payeeWallet.balance },
+        }),
+      ]);
 
       const newTransaction = await prisma.transaction.create({
         data: {

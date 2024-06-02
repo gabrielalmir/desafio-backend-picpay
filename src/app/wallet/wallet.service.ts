@@ -1,28 +1,28 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable } from '@nestjs/common';
 
-import { PrismaService } from "src/infra/prisma/prisma.service";
-import { CreateWalletDto } from "./dtos/create-wallet.dto";
-import { WalletType } from "./enums/wallet-type.enum";
+import { PrismaService } from 'src/infra/prisma/prisma.service';
+import { CreateWalletDto } from './dtos/create-wallet.dto';
+import { WalletType } from './enums/wallet-type.enum';
 
 @Injectable()
 export class WalletService {
-    constructor(readonly prismaService: PrismaService) {
-        this.prismaService = new PrismaService();
-    }
+  constructor(readonly prismaService: PrismaService) {
+    this.prismaService = new PrismaService();
+  }
 
-    async createWallet(wallet: CreateWalletDto) {
-        const walletTypes = Object.values(WalletType);
+  async createWallet(wallet: CreateWalletDto) {
+    const walletTypes = Object.values(WalletType);
 
-        const walletCreated = await this.prismaService.wallet.create({
-            data: {
-                fullName: wallet.fullName,
-                cpf: BigInt(wallet.cpf),
-                email: wallet.email,
-                password: wallet.password,
-                type: walletTypes.indexOf(wallet.type),
-            }
-        })
+    const walletCreated = await this.prismaService.wallet.create({
+      data: {
+        fullName: wallet.fullName,
+        cpf: BigInt(wallet.cpf),
+        email: wallet.email,
+        password: wallet.password,
+        type: walletTypes.indexOf(wallet.type),
+      },
+    });
 
-        return walletCreated;
-    }
+    return walletCreated;
+  }
 }

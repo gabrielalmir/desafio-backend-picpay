@@ -5,4 +5,4 @@ import { WalletModule } from './app/wallet/wallet.module';
 @Module({
   imports: [WalletModule, TransactionModule],
 })
-export class AppModule { }
+export class AppModule {}

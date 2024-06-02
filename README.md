@@ -2,14 +2,14 @@
 
 ## Visão Geral
 
-Este projeto é uma solução para o desafio técnico de backend do PicPay. A aplicação simula uma plataforma de pagamentos onde usuários podem realizar transferências entre si. O projeto é desenvolvido utilizando Node.js com o framework NestJS, Prisma como ORM, e Kafka para mensageria.
+Este projeto é uma solução para o desafio técnico de backend do PicPay. A aplicação simula uma plataforma de pagamentos onde usuários podem realizar transferências entre si. O projeto é desenvolvido utilizando Node.js com o framework NestJS, Prisma como ORM, e Redis para mensageria usando Bull.
 
 ## Tecnologias Utilizadas
 
 - **Node.js**: Ambiente de execução JavaScript no lado do servidor.
 - **NestJS**: Framework para construção de aplicações Node.js escaláveis e de fácil manutenção.
 - **Prisma**: ORM para TypeScript e Node.js que facilita o acesso ao banco de dados.
-- **Kafka**: Plataforma de streaming distribuído usada para mensageria.
+- **Redis**: Plataforma de mensageria open-source usando Bull para gerenciar filas.
 - **Zod**: Biblioteca para validação de esquemas.
 
 ## Configuração do Ambiente
@@ -49,16 +49,16 @@ Este projeto é uma solução para o desafio técnico de backend do PicPay. A ap
 
 ### Executando a Aplicação
 
-1. Execute as migrações do Prisma para configurar o banco de dados:
+1. Suba os serviços Docker (Kafka e PostgreSQL):
 
     ```bash
-    npx prisma migrate dev --name init
+    docker-compose up -d
     ```
 
-2. Suba os serviços Docker (Kafka e PostgreSQL):
+2. Execute as migrações do Prisma para configurar o banco de dados:
 
     ```bash
-    docker-compose up
+    npm run db:push
     ```
 
 3. Inicie a aplicação:

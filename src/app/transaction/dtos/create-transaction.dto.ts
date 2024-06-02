@@ -1,12 +1,12 @@
-import { IsNumber } from "class-validator";
+import { IsNumber } from 'class-validator';
 
 export abstract class CreateTransactionDto {
-    @IsNumber()
-    readonly value: number;
+  @IsNumber()
+  readonly value: number;
 
-    @IsNumber()
-    readonly payerId: number;
+  @IsNumber()
+  readonly payerId: number;
 
-    @IsNumber()
-    readonly payeeId: number;
+  @IsNumber()
+  readonly payeeId: number;
 }

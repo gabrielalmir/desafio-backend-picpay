@@ -1,4 +1,4 @@
 export enum WalletType {
-    COMMON = "common",
-    STORE = "store"
+  COMMON = 'common',
+  STORE = 'store',
 }

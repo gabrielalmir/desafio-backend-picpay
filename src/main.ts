@@ -1,14 +1,17 @@
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { FastifyAdapter, NestFastifyApplication } from '@nestjs/platform-fastify';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
-import { PrismaClientExceptionFilter } from './app/filters/prisma-exception.filter';
+import { PrismaClientExceptionFilter } from './infra/filters/prisma-exception.filter';
 
 async function bootstrap() {
   // Create the NestJS application
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter()
+    new FastifyAdapter(),
   );
 
   // Setup Application

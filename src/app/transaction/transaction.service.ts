@@ -34,16 +34,23 @@ export class TransactionService {
 
       payerWallet.transfer(createTransactionDto.value, payeeWallet);
 
-      const [payerWalletUpdate, payeeWalletUpdate] = await Promise.all([
-        prisma.wallet.update({
-          where: { id: payer.id },
-          data: { balance: payerWallet.balance },
-        }),
-        prisma.wallet.update({
-          where: { id: payee.id },
-          data: { balance: payeeWallet.balance },
-        }),
-      ]);
+      await this.prismaService.wallet.updateMany({
+        where: {
+          id: {
+            in: [payer.id, payee.id],
+          },
+        },
+        data: [
+          {
+            id: payer.id,
+            balance: payerWallet.balance,
+          },
+          {
+            id: payee.id,
+            balance: payeeWallet.balance,
+          },
+        ],
+      });
 
       const newTransaction = await prisma.transaction.create({
         data: {
@@ -52,8 +59,6 @@ export class TransactionService {
           payeeId: createTransactionDto.payeeId,
         },
       });
-
-      await Promise.all([payerWalletUpdate, payeeWalletUpdate]);
 
       await this.authorizeService.authorize(newTransaction);
 

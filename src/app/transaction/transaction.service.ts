@@ -66,7 +66,8 @@ export class TransactionService {
       payer &&
       payee &&
       payer.balance.gte(createTransactionDto.value) &&
-      payer.type !== 2
+      payer.type !== 2 &&
+      createTransactionDto.value > 0
     );
   }
 

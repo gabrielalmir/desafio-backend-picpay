@@ -18,23 +18,27 @@ export class TransactionService {
   }
 
   async createTransaction(createTransactionDto: CreateTransactionDto) {
-    const { payerWallet, payeeWallet } = await this.getWallets(
+    const { payer, payee } = await this.getWallets(
       createTransactionDto.payerId,
       createTransactionDto.payeeId,
     );
 
-    if (
-      !(await this.validateTransaction(
-        payerWallet,
-        payeeWallet,
-        createTransactionDto,
-      ))
-    ) {
+    if (!(await this.validateTransaction(payee, payer, createTransactionDto))) {
       throw new InvalidTransactionError('Invalid transaction');
     }
 
-    await this.transact(async () => {
-      const newTransaction = await this.prismaService.transaction.create({
+    const result = await this.prismaService.$transaction(async (prisma) => {
+      const payerWalletUpdate = prisma.wallet.update({
+        where: { id: createTransactionDto.payerId },
+        data: { balance: payer.balance.sub(createTransactionDto.value) },
+      });
+
+      const payeeWalletUpdate = prisma.wallet.update({
+        where: { id: createTransactionDto.payeeId },
+        data: { balance: payee.balance.add(createTransactionDto.value) },
+      });
+
+      const newTransaction = await prisma.transaction.create({
         data: {
           value: createTransactionDto.value,
           payerId: createTransactionDto.payerId,
@@ -42,37 +46,39 @@ export class TransactionService {
         },
       });
 
-      await this.prismaService.wallet.update({
-        where: { id: createTransactionDto.payerId },
-        data: { balance: payerWallet.balance.sub(createTransactionDto.value) },
-      });
+      await Promise.all([payerWalletUpdate, payeeWalletUpdate]);
 
-      await this.prismaService.wallet.update({
-        where: { id: createTransactionDto.payeeId },
-        data: { balance: payeeWallet.balance.add(createTransactionDto.value) },
-      });
+      await this.authorizeService.authorize(newTransaction);
 
-      await this.notificationService.notify(newTransaction);
+      return newTransaction;
     });
+
+    if (!result) {
+      throw new InvalidTransactionError('Invalid transaction');
+    }
+
+    await this.notificationService.notify(result);
   }
 
   private async validateTransaction(
-    payer: Wallet,
     payee: Wallet,
-    createTransactionDto: CreateTransactionDto,
+    payer: Wallet,
+    transaction: CreateTransactionDto,
   ) {
-    return (
-      createTransactionDto.payeeId !== createTransactionDto.payerId &&
-      payer &&
-      payee &&
-      payer.balance.gte(createTransactionDto.value) &&
-      payer.type !== 2 &&
-      createTransactionDto.value > 0
-    );
+    if (
+      transaction.value < 0 ||
+      transaction.payeeId === transaction.payerId ||
+      !payee ||
+      !payer
+    ) {
+      return false;
+    }
+
+    return payer?.balance.gte(transaction.value);
   }
 
   async getWallets(payerId: number, payeeId: number) {
-    const [payerWallet, payeeWallet] = await Promise.all([
+    const [payer, payee] = await Promise.all([
       this.prismaService.wallet.findUnique({
         where: { id: payerId },
       }),
@@ -81,17 +87,6 @@ export class TransactionService {
       }),
     ]);
 
-    return { payerWallet, payeeWallet };
-  }
-
-  async transact(callback: () => Promise<void>) {
-    await this.prismaService.$queryRaw`BEGIN TRANSACTION`;
-    try {
-      await callback();
-      await this.prismaService.$queryRaw`COMMIT`;
-    } catch (error) {
-      await this.prismaService.$queryRaw`ROLLBACK`;
-      throw error;
-    }
+    return { payer, payee };
   }
 }

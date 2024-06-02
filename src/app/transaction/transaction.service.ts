@@ -19,10 +19,7 @@ export class TransactionService {
   }
 
   async createTransaction(createTransactionDto: CreateTransactionDto) {
-    const { payer, payee } = await this.getWallets(
-      createTransactionDto.payerId,
-      createTransactionDto.payeeId,
-    );
+    const { payer, payee } = await this.getWallets(createTransactionDto.payerId, createTransactionDto.payeeId);
 
     if (!(await this.validateTransaction(payee, payer, createTransactionDto))) {
       throw new InvalidTransactionError('Invalid transaction');
@@ -72,17 +69,8 @@ export class TransactionService {
     await this.notificationService.notify(result);
   }
 
-  private async validateTransaction(
-    payee: Wallet,
-    payer: Wallet,
-    transaction: CreateTransactionDto,
-  ) {
-    if (
-      transaction.value < 0 ||
-      transaction.payeeId === transaction.payerId ||
-      !payee ||
-      !payer
-    ) {
+  private async validateTransaction(payee: Wallet, payer: Wallet, transaction: CreateTransactionDto) {
+    if (transaction.value < 0 || transaction.payeeId === transaction.payerId || !payee || !payer) {
       return false;
     }
 

@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "src/prisma/prisma.service";
+
+import { PrismaService } from "src/infra/prisma/prisma.service";
 import { CreateWalletDto } from "./dtos/create-wallet.dto";
 import { WalletType } from "./enums/wallet-type.enum";
 
